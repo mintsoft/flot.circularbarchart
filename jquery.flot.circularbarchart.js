@@ -251,9 +251,9 @@ Licensed under the Apache license.
 				function drawStackedPie() {
 					var baseAngle = TAU * options.series.circularbar.startAngle;
 					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
-
+					
 					var ranges = determineRangesForSeries(series);
-
+					console.log("radius", radius, maxRadius, ranges.y.max);
 					ctx.save();
 					ctx.translate(centerLeft,centerTop);
 					ctx.save();
@@ -268,16 +268,18 @@ Licensed under the Apache license.
 							var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
 							var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
 							var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
-							var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
-							var startRadius = maximumValuesPerX[datapoint[0]] == undefined ? 0 : maximumValuesPerX[datapoint[0]];
-							var endRadius = startRadius + sliceRadius;
+							
+							var radii = findBoundariesForYValueSegment(datapoint[1], maximumValuesPerX[datapoint[0]], ranges, radius);
+							var endRadius = radii.end;
+							var startRadius = radii.start;
+							console.log(radii);
 							
 							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, series[s].color, true);
 							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, options.series.circularbar.stroke.color, false);
 
 							maximumValuesPerX[datapoint[0]] = endRadius;
-
-							console.debug("Set: ",s,"Input:",i,datapoint,"\t Drawing : ", sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius, endRadius);
+							
+							//console.debug("Set: ",s,"Input:",i,datapoint,"\t Drawing : ", sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius, endRadius);
 						}
 					}
 
@@ -367,6 +369,29 @@ Licensed under the Apache license.
 				{
 					var ratio = y/ranges.y.max;
 					return internalHole() + (maxRadius-internalHole()) * ratio;
+				}
+				
+				function findBoundariesForYValueSegment(y, startRadius, ranges, maxRadius)
+				{
+					var y_ratio = y/ranges.y.max;
+					
+					var returns = {
+						start: null,
+						end: null
+					};
+					
+					if(startRadius)
+					{
+						returns.start = startRadius;
+						returns.end = startRadius + (maxRadius - internalHole()) * y_ratio; 
+					}
+					else 
+					{	
+						returns.start = internalHole();
+						returns.end = internalHole() + (maxRadius-internalHole()) * y_ratio;
+					}
+					
+					return returns;
 				}
 				
 				function internalHole()
