@@ -133,15 +133,19 @@ Licensed under the Apache license.
 						max: null
 					}
 				};
-				for(var i=0; i<series.length; ++i) {
-					if(ranges.x.min === null || ranges.x.min > series[i].data[0])
-						ranges.x.min = series[i].data[0];
-					if(ranges.x.max === null || ranges.x.max < series[i].data[0])
-						ranges.x.max = series[i].data[0];
-					if(ranges.y.min === null || ranges.y.min > series[i].data[1])
-						ranges.y.min = series[i].data[1];
-					if(ranges.y.max === null || ranges.y.max < series[i].data[1])
-						ranges.y.max = series[i].data[1];
+				var dataSet;
+				for (var s = 0; s < series.length; ++s) {
+					dataSet = series[s].data;
+					for (var i = 0; i < dataSet.length; ++i) {
+						if (ranges.x.min === null || ranges.x.min > dataSet[i][0])
+							ranges.x.min = dataSet[i][0];
+						if (ranges.x.max === null || ranges.x.max < dataSet[i][0])
+							ranges.x.max = dataSet[i][0];
+						if (ranges.y.min === null || ranges.y.min > dataSet[i][1])
+							ranges.y.min = dataSet[i][1];
+						if (ranges.y.max === null || ranges.y.max < dataSet[i][1])
+							ranges.y.max = dataSet[i][1];
+					}
 				}
 				
 				ranges.x.range = ranges.x.max - ranges.x.min;
@@ -150,20 +154,27 @@ Licensed under the Apache license.
 				// center and rotate to starting position
 				ctx.save();
 				ctx.translate(centerLeft,centerTop);
-
-				// draw slices
 				ctx.save();
-				for (var i = 0; i < series.length; ++i) {
-					var datapoint = series[i].data;
-					var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
-					var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
-					var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
-					var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
-					drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[i].color, true);
-					drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
-					
-					//console.debug("Input:" + datapoint + "\t Drawing : "+ sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius);
+
+				// draw pies
+				// draw slices
+				// foreach series, do a complete pie:
+				for(var s=0; s< series.length; ++s) {
+
+					dataSet = series[s].data;
+					for (var i = 0; i < dataSet.length; ++i) {
+						var datapoint = dataSet[i];
+						var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
+						var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
+						var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
+						var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
+						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, true);
+						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
+
+						//console.debug("Input:" + datapoint + "\t Drawing : "+ sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius);
+					}
 				}
+
 				drawInternalHole(ctx);
 				ctx.restore();
 				
@@ -250,6 +261,7 @@ Licensed under the Apache license.
 
 	var options = {
 		series: {
+			stack: false,
 			circularbar: {
 				show: false,
 				radius: "auto",	// actual radius of the visible pie (based on full calculated radius if <=1, or hard pixel value)

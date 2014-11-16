@@ -13,8 +13,24 @@
 
 <script language="JavaScript">
 	$(function(){
-		var data = [[0, 3],[1,5],[3,7],[4, 8],[5,1],[6,3],[7,0],[8, 5], [9, 13]];
-		$.plot("#circularholder", data, {
+	
+		var d1 = [];
+		for (var i = 0; i <= 10; i += 1) {
+			d1.push([i, parseInt(Math.random() * 30)]);
+		}
+
+		var d2 = [];
+		for (var i = 0; i <= 10; i += 1) {
+			d2.push([i, parseInt(Math.random() * 30)]);
+		}
+
+		var d3 = [];
+		for (var i = 0; i <= 10; i += 1) {
+			d3.push([i, parseInt(Math.random() * 30)]);
+		}
+
+		//var data = [[0, 3],[1,5],[3,7],[4, 8],[5,1],[6,3],[7,0],[8, 5], [9, 13]];
+		$.plot("#circularholder", [d1,d2], {
 			series: {
 				circularbar: {
 					show: true,
