@@ -156,13 +156,13 @@ Licensed under the Apache license.
 					var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
 					var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
 					drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[i].color, true);
-					drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, '#000000', false);
-
-					console.debug("Input:" + datapoint + "\t Drawing : "+ sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius);
-
+					drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
+					
+					//console.debug("Input:" + datapoint + "\t Drawing : "+ sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius);
 				}
+				drawInternalHole(ctx);
 				ctx.restore();
-
+				
 				return true;
 
 				function drawBarSlice(startAngle, endAngle, sliceRadius, color, fill) {
@@ -210,8 +210,36 @@ Licensed under the Apache license.
 				function findRadiusForYValue(y, ranges, maxRadius)
 				{
 					var ratio = y/ranges.y.max;
-					return maxRadius * ratio;
+					return internalHole() + (maxRadius-internalHole()) * ratio;
 				}
+				
+				function internalHole()
+				{
+					return options.series.circularbar.internalRadius * maxRadius;
+				}
+				
+				function drawInternalHole(layer) {
+					layer.save();
+					var innerRadius = internalHole();
+					
+					layer.globalCompositeOperation = "destination-out"; // this does not work with excanvas, but it will fall back to using the stroke color
+					layer.beginPath();
+					layer.fillStyle = options.series.circularbar.stroke.color;
+					layer.arc(0, 0, innerRadius, 0, TAU, false);
+					layer.fill();
+					layer.closePath();
+					layer.restore();
+					
+					// add inner stroke/*
+					layer.save();
+					layer.beginPath();
+					layer.strokeStyle = options.series.circularbar.stroke.color;
+					layer.arc(0, 0, innerRadius, 0, TAU, false);
+					layer.stroke();
+					layer.closePath();
+					layer.restore();
+				}
+				
 			} // end drawPie function
 		} // end draw function
     }
@@ -227,8 +255,9 @@ Licensed under the Apache license.
 					left: "auto"
 				},
 				barWidth: 2*Math.PI/16,
+				internalRadius: 0.2,	//as a ratio of the entire radius
 				stroke: {
-					color: "#fff",
+					color: "#000",
 					width: 1
 				}
 			}
