@@ -13,11 +13,13 @@
 
 <script language="JavaScript">
 	$(function(){
-		var data = [[0, 3], [4, 8], [8, 5], [9, 13]];
-		$.plot("#circularholder",data, {
+		var data = [[0, 3],[1,5],[3,7],[4, 8],[5,1],[6,3],[7,0],[8, 5], [9, 13]];
+		$.plot("#circularholder", data, {
 			series: {
 				circularbar: {
-					show: true
+					show: true,
+					barWidth: 1,
+					internalRadius: 0.1
 				}
 			}
 		});

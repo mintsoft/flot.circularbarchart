@@ -12,7 +12,8 @@ Licensed under the Apache license.
 			maxRadius = null,
 			centerLeft = null,
 			centerTop = null,
-			ctx = null;
+			ctx = null,
+			barWidth = null;
 		var TAU = 2 * Math.PI;
 		/*
 		Flot hooks
@@ -25,6 +26,9 @@ Licensed under the Apache license.
 				// set radius
 				if (options.series.circularbar.radius == "auto") {
 					options.series.circularbar.radius = 1;
+				}
+				if(options.series.circularbar.barWidth == "auto") {
+					options.series.circularbar.barWidth = 1;
 				}
 			}
 		});
@@ -254,7 +258,7 @@ Licensed under the Apache license.
 					top: 0,
 					left: "auto"
 				},
-				barWidth: 2*Math.PI/16,
+				barWidth: "auto",
 				internalRadius: 0.2,	//as a ratio of the entire radius
 				stroke: {
 					color: "#000",
