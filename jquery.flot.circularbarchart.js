@@ -304,7 +304,7 @@ Licensed under the Apache license.
 					}
 
 					ctx.beginPath();
-					if (Math.abs(startAngle - Math.PI * 2) > 0.000000001) {
+					if (Math.abs(startAngle - TAU) > 0.000000001) {
 						ctx.moveTo(0, 0); // Center of the pie
 					}
 
@@ -334,7 +334,7 @@ Licensed under the Apache license.
 					}
 
 					ctx.beginPath();
-					if (Math.abs(startAngle - Math.PI * 2) > 0.000000001) {
+					if (Math.abs(startAngle - TAU) > 0.000000001) {
 						ctx.moveTo(0, 0); // Center of the pie
 					}
 					
