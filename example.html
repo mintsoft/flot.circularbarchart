@@ -28,15 +28,20 @@
 		for (var i = 0; i <= 10; i += 1) {
 			d3.push([i, parseInt(Math.random() * 30)]);
 		}
+		
+		var d4 = [];
+		for (var i = 0; i <= 10; i += 1) {
+			d4.push([i, parseInt(Math.random() * 30)]);
+		}
 
 		//var data = [[0, 3],[1,5],[3,7],[4, 8],[5,1],[6,3],[7,0],[8, 5], [9, 13]];
-		$.plot("#circularholder", [d1,d2], {
+		$.plot("#circularholder", [d1,d2,d3,d4], {
 			series: {
 				stack: true,
 				circularbar: {
 					show: true,
 					barWidth: 1,
-					internalRadius: 0.1
+					internalRadius: 0.2
 				}
 			}
 		});
