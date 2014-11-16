@@ -119,10 +119,69 @@ Licensed under the Apache license.
 				target.children().filter(".pieLabel, .pieLabelBackground").remove();
 			}
 
-			function drawPie() {
-				var baseAngle = TAU * options.series.circularbar.startAngle;
-				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
+			function determineRangesForStackedSeries(series) {
+				var perSeriesRanges = [];
 
+				var dataSet;
+				for (var s = 0; s < series.length; ++s) {
+					dataSet = series[s].data;
+
+					var range = {
+						x: {
+							min: null,
+							max: null
+						},
+						y: {
+							min: null,
+							max: null
+						}
+					};
+
+					for (var i = 0; i < dataSet.length; ++i) {
+						if (range.x.min === null || range.x.min > dataSet[i][0])
+							range.x.min = dataSet[i][0];
+						if (range.x.max === null || range.x.max < dataSet[i][0])
+							range.x.max = dataSet[i][0];
+						if (range.y.min === null || range.y.min > dataSet[i][1])
+							range.y.min = dataSet[i][1];
+						if (range.y.max === null || range.y.max < dataSet[i][1])
+							range.y.max = dataSet[i][1];
+					}
+
+					perSeriesRanges[s] = range;
+				}
+
+				var ranges = {
+					x: {
+						min: null,
+						max: null
+					},
+					y: {
+						min: null,
+						max: 0
+					}
+				};
+				for (var x=0; x<perSeriesRanges.length; ++x)
+				{
+					if (ranges.x.min === null || ranges.x.min > perSeriesRanges[x].x.min)
+						ranges.x.min = perSeriesRanges[x].x.min;
+					if (ranges.x.max === null || ranges.x.max < perSeriesRanges[x].y.min)
+						ranges.x.max = perSeriesRanges[x].x.max;
+					if (ranges.y.min === null || ranges.y.min > perSeriesRanges[x].y.min)
+						ranges.y.min = perSeriesRanges[x].y.min;
+					ranges.y.max += perSeriesRanges[x].y.max;
+				}
+
+				ranges.x.range = ranges.x.max - ranges.x.min;
+				ranges.y.range = ranges.y.max - ranges.y.min;
+				return ranges;
+			}
+
+			function determineRangesForSeries(series) {
+				if(options.series.stack)
+				{
+					return determineRangesForStackedSeries(series);
+				}
 				var ranges = {
 					x: {
 						min: null,
@@ -133,9 +192,11 @@ Licensed under the Apache license.
 						max: null
 					}
 				};
+
 				var dataSet;
 				for (var s = 0; s < series.length; ++s) {
 					dataSet = series[s].data;
+
 					for (var i = 0; i < dataSet.length; ++i) {
 						if (ranges.x.min === null || ranges.x.min > dataSet[i][0])
 							ranges.x.min = dataSet[i][0];
@@ -147,21 +208,28 @@ Licensed under the Apache license.
 							ranges.y.max = dataSet[i][1];
 					}
 				}
-				
+
 				ranges.x.range = ranges.x.max - ranges.x.min;
 				ranges.y.range = ranges.y.max - ranges.y.min;
-				
+				return ranges;
+			}
+
+			function drawPie() {
+				if(options.series.stack)
+					return drawStackedPie();
+
+				var baseAngle = TAU * options.series.circularbar.startAngle;
+				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
+
+				var ranges = determineRangesForSeries(series);
+
 				// center and rotate to starting position
 				ctx.save();
 				ctx.translate(centerLeft,centerTop);
 				ctx.save();
 
-				// draw pies
-				// draw slices
-				// foreach series, do a complete pie:
 				for(var s=0; s< series.length; ++s) {
-
-					dataSet = series[s].data;
+					var dataSet = series[s].data;
 					for (var i = 0; i < dataSet.length; ++i) {
 						var datapoint = dataSet[i];
 						var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
@@ -179,6 +247,45 @@ Licensed under the Apache license.
 				ctx.restore();
 				
 				return true;
+
+				function drawStackedPie() {
+					var baseAngle = TAU * options.series.circularbar.startAngle;
+					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
+
+					var ranges = determineRangesForSeries(series);
+
+					ctx.save();
+					ctx.translate(centerLeft,centerTop);
+					ctx.save();
+
+					var maximumValuesPerX = [];
+
+					for(var s=0; s < series.length; ++s) {
+						var dataSet = series[s].data;
+						for (var i = 0; i < dataSet.length; ++i) {
+							var datapoint = dataSet[i];
+							
+							var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
+							var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
+							var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
+							var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
+							var startRadius = maximumValuesPerX[datapoint[0]] == undefined ? 0 : maximumValuesPerX[datapoint[0]];
+							var endRadius = startRadius + sliceRadius;
+							
+							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, series[s].color, true);
+							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, options.series.circularbar.stroke.color, false);
+
+							maximumValuesPerX[datapoint[0]] = endRadius;
+
+							console.debug("Set: ",s,"Input:",i,datapoint,"\t Drawing : ", sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius, endRadius);
+						}
+					}
+
+					drawInternalHole(ctx);
+					ctx.restore();
+
+					return true;
+				}
 
 				function drawBarSlice(startAngle, endAngle, sliceRadius, color, fill) {
 
@@ -200,6 +307,40 @@ Licensed under the Apache license.
 
 					//ctx.arc(0, 0, radius, 0, angle, false); // This doesn't work properly in Opera
 					ctx.arc(0, 0, sliceRadius, startAngle, endAngle, false);
+					ctx.closePath();
+					//ctx.rotate(angle); // This doesn't work properly in Opera
+
+					if (fill) {
+						ctx.fill();
+					} else {
+						ctx.stroke();
+					}
+				}
+				
+				function drawBarSegment(startAngle, endAngle, startRadius, endRadius, color, fill) {
+
+					if (startAngle < 0 || isNaN(startAngle)) {
+						return;
+					}
+
+					if (fill) {
+						ctx.fillStyle = color;
+					} else {
+						ctx.strokeStyle = color;
+						ctx.lineJoin = "round";
+					}
+
+					ctx.beginPath();
+					if (Math.abs(startAngle - Math.PI * 2) > 0.000000001) {
+						ctx.moveTo(0, 0); // Center of the pie
+					}
+					
+					// this works by drawing the outside arc in clockwise and
+					// the inside arc anticlockwise then joining them to form
+					// a segment ^_^
+					ctx.beginPath();
+					ctx.arc(0, 0, endRadius, startAngle, endAngle, false);
+					ctx.arc(0, 0, startRadius, endAngle, startAngle, true);
 					ctx.closePath();
 					//ctx.rotate(angle); // This doesn't work properly in Opera
 
