@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Flot Circular Bar Charts</title>
+	<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="jquery.flot.circularbarchart.js"></script>
+</head>
+
+<body>
+<h1>Example:</h1>
+<div id="circularholder" style="width: 800px; height: 600px;"></div>
+
+<script language="JavaScript">
+	$(function(){
+		var data = [[0, 3], [4, 8], [8, 5], [9, 13]];
+		$.plot("#circularholder",data, {
+			series: {
+				circularbar: {
+					show: true
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>
