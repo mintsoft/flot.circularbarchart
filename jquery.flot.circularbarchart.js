@@ -275,7 +275,8 @@ Licensed under the Apache license.
 							console.log(radii);
 							
 							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, series[s].color, true);
-							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, options.series.circularbar.stroke.color, false);
+							if(options.series.circularbar.stroke.width > 0)
+								drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, options.series.circularbar.stroke.color, false);
 
 							maximumValuesPerX[datapoint[0]] = endRadius;
 							
@@ -412,13 +413,16 @@ Licensed under the Apache license.
 					layer.restore();
 					
 					// add inner stroke/*
-					layer.save();
-					layer.beginPath();
-					layer.strokeStyle = options.series.circularbar.stroke.color;
-					layer.arc(0, 0, innerRadius, 0, TAU, false);
-					layer.stroke();
-					layer.closePath();
-					layer.restore();
+					if(options.series.circularbar.stroke.width > 0)
+					{				
+						layer.save();
+						layer.beginPath();
+						layer.strokeStyle = options.series.circularbar.stroke.color;
+						layer.arc(0, 0, innerRadius, 0, TAU, false);
+						layer.stroke();
+						layer.closePath();
+						layer.restore();
+					}
 				}
 				
 			} // end drawPie function
