@@ -271,6 +271,9 @@ Licensed under the Apache license.
 						ctx.beginPath();
 						ctx.arc(0, 0, rad, 0, TAU, false);
 						ctx.stroke();
+						ctx.fillStyle = options.grid.markingsColor;
+						var y_val_for_display = Math.round(y_val*100)/100;
+						ctx.fillText(y_val_for_display, 3, -1 * rad -3);
 					}
 					
 					//segments
@@ -278,7 +281,7 @@ Licensed under the Apache license.
 					{
 						var sliceStartAngle = baseAngle + findAngleForXValue(x_val, ranges);
 						var sliceEndAngle = baseAngle + findAngleForXValue(x_val + options.series.circularbar.barWidth, ranges);
-						console.log(sliceStartAngle, sliceEndAngle);
+						
 						drawBarSlice(sliceStartAngle, sliceEndAngle, radius, options.grid.markingsColor, false);
 					}
 					
