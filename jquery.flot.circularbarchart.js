@@ -277,7 +277,7 @@ Licensed under the Apache license.
 						ctx.stroke();
 						ctx.fillStyle = options.yaxis.tickColor;
 						var y_val_for_display = Math.round(y_val*100)/100;
-						ctx.fillText(y_val_for_display, 3, -1 * rad + 10);
+						ctx.fillText(y_val_for_display, 3, -1 * rad + 13);
 					}
 					
 					//segments
