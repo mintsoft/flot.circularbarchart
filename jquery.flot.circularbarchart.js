@@ -110,6 +110,7 @@ Licensed under the Apache license.
 			}
 
 			var series = plot.getData();
+			
 			drawPie();
 
 			// we're actually done at this point, just defining internal functions at this point
@@ -222,12 +223,14 @@ Licensed under the Apache license.
 				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
 
 				var ranges = determineRangesForSeries(series);
-
+			
 				// center and rotate to starting position
 				ctx.save();
 				ctx.translate(centerLeft,centerTop);
 				ctx.save();
 
+				drawAxis(radius, ranges);
+				
 				for(var s=0; s< series.length; ++s) {
 					var dataSet = series[s].data;
 					for (var i = 0; i < dataSet.length; ++i) {
@@ -247,17 +250,38 @@ Licensed under the Apache license.
 				ctx.restore();
 				
 				return true;
-
+				
+				function drawAxis(radius, ranges) {
+					//vertical line
+					ctx.beginPath();
+					ctx.strokeStyle = options.grid.markingsColor;
+					ctx.lineWidth = 1;
+					ctx.moveTo(0, 0);
+					ctx.lineTo(0, -1 * radius);
+					ctx.stroke();
+					
+					for (var y_val = ranges.y.min; y_val < ranges.y.max; y_val += ranges.y.range/10)
+					{
+						var rad = findRadiusForYValue(y_val, ranges, radius);
+						ctx.beginPath();
+						ctx.arc(0, 0, rad, 0, TAU, false);
+						ctx.stroke();
+					}
+					
+				}
+				
 				function drawStackedPie() {
 					var baseAngle = TAU * options.series.circularbar.startAngle;
 					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
 					
 					var ranges = determineRangesForSeries(series);
-					console.log("radius", radius, maxRadius, ranges.y.max);
+					//console.log("radius", radius, maxRadius, ranges.y.max);
 					ctx.save();
 					ctx.translate(centerLeft,centerTop);
 					ctx.save();
 
+					drawAxis(radius, ranges);
+					
 					var maximumValuesPerX = [];
 
 					for(var s=0; s < series.length; ++s) {
@@ -272,7 +296,7 @@ Licensed under the Apache license.
 							var radii = findBoundariesForYValueSegment(datapoint[1], maximumValuesPerX[datapoint[0]], ranges, radius);
 							var endRadius = radii.end;
 							var startRadius = radii.start;
-							console.log(radii);
+							//console.log(radii);
 							
 							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, series[s].color, true);
 							if(options.series.circularbar.stroke.width > 0)
