@@ -242,7 +242,7 @@ Licensed under the Apache license.
 						var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
 						var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
 						var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
-						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, true);
+						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, options.series.circularbar.fill);
 						if(options.series.circularbar.stroke.width > 0)
 							drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
 
@@ -313,9 +313,8 @@ Licensed under the Apache license.
 							var radii = findBoundariesForYValueSegment(datapoint[1], maximumValuesPerX[datapoint[0]], ranges, radius);
 							var endRadius = radii.end;
 							var startRadius = radii.start;
-							//console.log(radii);
 							
-							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, series[s].color, true);
+							drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, series[s].color, options.series.circularbar.fill);
 							if(options.series.circularbar.stroke.width > 0)
 								drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, options.series.circularbar.stroke.color, false);
 
@@ -486,7 +485,8 @@ Licensed under the Apache license.
 				stroke: {
 					color: "#000",
 					width: 1
-				}
+				},
+				fill: true,	
 			}
 		}
 	};
