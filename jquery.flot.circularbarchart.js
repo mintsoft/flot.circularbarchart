@@ -265,15 +265,19 @@ Licensed under the Apache license.
 					ctx.stroke();
 					
 					//rings
-					for (var y_val = ranges.y.min; y_val <= ranges.y.max; y_val += ranges.y.range/5)
+					var y_min = options.yaxis.min == undefined ? ranges.y.min : options.yaxis.min;
+					var y_max = options.yaxis.max == undefined ? ranges.y.max : options.yaxis.max;
+					var y_step = options.yaxis.tickSize == undefined ? ((y_max-y_min)/options.yaxis.ticks) : options.yaxis.tickSize;
+					
+					for (var y_val = y_min; y_val <= y_max; y_val += y_step)
 					{
 						var rad = findRadiusForYValue(y_val, ranges, radius);
 						ctx.beginPath();
 						ctx.arc(0, 0, rad, 0, TAU, false);
 						ctx.stroke();
-						ctx.fillStyle = options.grid.markingsColor;
+						ctx.fillStyle = options.yaxis.tickColor;
 						var y_val_for_display = Math.round(y_val*100)/100;
-						ctx.fillText(y_val_for_display, 3, -1 * rad -3);
+						ctx.fillText(y_val_for_display, 3, -1 * rad + 10);
 					}
 					
 					//segments
@@ -488,6 +492,9 @@ Licensed under the Apache license.
 				},
 				fill: true,	
 			}
+		},
+		yaxis: {
+			ticks: 5,
 		}
 	};
 
