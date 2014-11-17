@@ -15,6 +15,7 @@ Licensed under the Apache license.
 			ctx = null,
 			barWidth = null;
 		var TAU = 2 * Math.PI;
+		var baseAngle = null;
 		/*
 		Flot hooks
 		*/
@@ -30,6 +31,9 @@ Licensed under the Apache license.
 				if(options.series.circularbar.barWidth == "auto") {
 					options.series.circularbar.barWidth = 1;
 				}
+				
+				if(options.series.circularbar.startAngle)
+					baseAngle = TAU * options.series.circularbar.startAngle;
 			}
 		});
 
@@ -219,7 +223,6 @@ Licensed under the Apache license.
 				if(options.series.stack)
 					return drawStackedPie();
 
-				var baseAngle = TAU * options.series.circularbar.startAngle;
 				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
 
 				var ranges = determineRangesForSeries(series);
@@ -231,7 +234,7 @@ Licensed under the Apache license.
 
 				drawAxis(radius, ranges);
 				
-				for(var s=0; s< series.length; ++s) {
+				for(var s=0; s < series.length; ++s) {
 					var dataSet = series[s].data;
 					for (var i = 0; i < dataSet.length; ++i) {
 						var datapoint = dataSet[i];
@@ -240,7 +243,8 @@ Licensed under the Apache license.
 						var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
 						var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
 						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, true);
-						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
+						if(options.series.circularbar.stroke.width > 0)
+							drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
 
 						//console.debug("Input:" + datapoint + "\t Drawing : "+ sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius);
 					}
@@ -260,7 +264,8 @@ Licensed under the Apache license.
 					ctx.lineTo(0, -1 * radius);
 					ctx.stroke();
 					
-					for (var y_val = ranges.y.min; y_val < ranges.y.max; y_val += ranges.y.range/10)
+					//rings
+					for (var y_val = ranges.y.min; y_val <= ranges.y.max; y_val += ranges.y.range/5)
 					{
 						var rad = findRadiusForYValue(y_val, ranges, radius);
 						ctx.beginPath();
@@ -268,10 +273,19 @@ Licensed under the Apache license.
 						ctx.stroke();
 					}
 					
+					//segments
+					for (var x_val = ranges.x.min; x_val <= ranges.x.max; x_val += options.series.circularbar.barWidth)
+					{
+						var sliceStartAngle = baseAngle + findAngleForXValue(x_val, ranges);
+						var sliceEndAngle = baseAngle + findAngleForXValue(x_val + options.series.circularbar.barWidth, ranges);
+						console.log(sliceStartAngle, sliceEndAngle);
+						drawBarSlice(sliceStartAngle, sliceEndAngle, radius, options.grid.markingsColor, false);
+					}
+					
+					ctx.restore();
 				}
 				
 				function drawStackedPie() {
-					var baseAngle = TAU * options.series.circularbar.startAngle;
 					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
 					
 					var ranges = determineRangesForSeries(series);
