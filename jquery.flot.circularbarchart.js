@@ -116,7 +116,6 @@ Licensed under the Apache license.
 			var series = plot.getData();
 			
 			drawPie();
-
 			// we're actually done at this point, just defining internal functions at this point
 
 			function clear() {
@@ -218,7 +217,33 @@ Licensed under the Apache license.
 				ranges.y.range = ranges.y.max - ranges.y.min;
 				return ranges;
 			}
+			
+			function drawAccentLine(radius) {
+				var accentOpts = options.series.circularbar.accentLine;
+				if(accentOpts.show)
+				{
+					ctx.save();
+					/*
+					accentLine: {
+						show: false,
+						color: '#f00',
+						width: 2,
+						angle: 0.25	//between 0 & 1; 1 and 0 being the same, 0.5 being half a rotation
+					}*/
+					var xpos = radius * Math.cos(baseAngle + TAU * accentOpts.angle),
+						ypos = radius * Math.sin(baseAngle + TAU * accentOpts.angle);
 
+					ctx.strokeStyle = accentOpts.color;
+					ctx.lineWidth = accentOpts.width;
+					ctx.moveTo(0, 0);
+					ctx.lineTo(xpos, ypos);
+					ctx.stroke();
+					
+					ctx.restore();
+					ctx.save();
+				}
+			}
+			
 			function drawPie() {
 				if(options.series.stack)
 					return drawStackedPie();
@@ -251,6 +276,7 @@ Licensed under the Apache license.
 				}
 
 				drawInternalHole(ctx);
+				drawAccentLine(radius);
 				ctx.restore();
 				
 				return true;
@@ -329,6 +355,7 @@ Licensed under the Apache license.
 					}
 
 					drawInternalHole(ctx);
+					drawAccentLine(radius);
 					ctx.restore();
 
 					return true;
@@ -456,7 +483,7 @@ Licensed under the Apache license.
 					layer.closePath();
 					layer.restore();
 					
-					// add inner stroke/*
+					// add inner stroke
 					if(options.series.circularbar.stroke.width > 0)
 					{				
 						layer.save();
@@ -491,6 +518,12 @@ Licensed under the Apache license.
 					width: 1
 				},
 				fill: true,	
+				accentLine: {
+					show: false,
+					color: '#f00',
+					width: 2,
+					angle: 0.25	//between 0 & 1; 1 and 0 being the same, 0.5 being half a rotation
+				}
 			}
 		},
 		yaxis: {
