@@ -223,16 +223,10 @@ Licensed under the Apache license.
 				if(accentOpts.show)
 				{
 					ctx.save();
-					/*
-					accentLine: {
-						show: false,
-						color: '#f00',
-						width: 2,
-						angle: 0.25	//between 0 & 1; 1 and 0 being the same, 0.5 being half a rotation
-					}*/
 					var xpos = radius * Math.cos(baseAngle + TAU * accentOpts.angle),
 						ypos = radius * Math.sin(baseAngle + TAU * accentOpts.angle);
-
+					
+					ctx.beginPath();
 					ctx.strokeStyle = accentOpts.color;
 					ctx.lineWidth = accentOpts.width;
 					ctx.moveTo(0, 0);
