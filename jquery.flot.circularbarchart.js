@@ -253,8 +253,6 @@ Licensed under the Apache license.
 				ctx.save();
 				ctx.translate(centerLeft,centerTop);
 				ctx.save();
-
-				drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 				
 				for(var s=0; s < series.length; ++s) {
 					var dataSet = series[s].data;
@@ -269,7 +267,7 @@ Licensed under the Apache license.
 							drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
 					}
 				}
-
+				drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 				drawInternalHole(ctx);
 				drawAccentLine(radius);
 				ctx.restore();
@@ -296,7 +294,7 @@ Licensed under the Apache license.
 						ctx.beginPath();
 						ctx.arc(0, 0, rad, 0, TAU, false);
 						ctx.stroke();
-						ctx.fillStyle = options.yaxis.tickColor;
+						ctx.fillStyle = options.grid.markingsColor;
 						var y_val_for_display = Math.round(y_val*100)/100;
 						ctx.fillText(y_val_for_display, 3, -1 * rad + 13);
 					}
@@ -309,7 +307,7 @@ Licensed under the Apache license.
 
 						drawLineAtAngle(sliceStartAngle, radius + overhang, options.grid.markingsColor, 1);
 						if (xAxisIndex % options.xaxis.tickStep == 0) {
-							drawXAxisLabelAtAngle(x_val, sliceStartAngle, radius+1.5*overhang, options.yaxis.tickColor);
+							drawXAxisLabelAtAngle(x_val, sliceStartAngle, radius+1.5*overhang, options.grid.markingsColor);
 						}
 					}
 					
@@ -335,8 +333,6 @@ Licensed under the Apache license.
 					ctx.translate(centerLeft,centerTop);
 					ctx.save();
 
-					drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
-					
 					var maximumValuesPerX = [];
 
 					for(var s=0; s < series.length; ++s) {
@@ -359,7 +355,7 @@ Licensed under the Apache license.
 							maximumValuesPerX[datapoint[0]] = endRadius;
 						}
 					}
-
+					drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 					drawInternalHole(ctx);
 					drawAccentLine(radius + options.series.circularbar.xAxisOverhang);
 					ctx.restore();

@@ -5,11 +5,16 @@
 	<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
 	<script language="javascript" type="text/javascript" src="jquery.flot.circularbarchart.js"></script>
+	<style lang="text/css">
+		body {
+			background: #fff;
+		}
+	</style>
 </head>
 
 <body>
 <h1>Example:</h1>
-<div id="circularholder" style="width: 800px; height: 600px;"></div>
+<div id="circularholder" style="width: 400px; height: 400px;"></div>
 
 <script language="JavaScript">
 	$(function(){
@@ -62,6 +67,9 @@
 			},
 			xaxis: {
 				tickStep: 1
+			},
+			grid: {
+				markingsColor: '#aaa'
 			}
 		});
 	});
