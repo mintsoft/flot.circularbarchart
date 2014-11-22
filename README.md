@@ -14,7 +14,9 @@ Minimal example:
 
 ![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example1.png "Minimal Example")
 
-==Usage==
+Usage Example
+-------------
+
 ```javascript
 var d1 = [[0,99],[1,80],[2,79],[3,97]],
     d2 = [[0,39],[1,42],[2,51],[3,46]],
