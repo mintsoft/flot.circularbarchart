@@ -48,14 +48,14 @@
 					show: true,
 					barWidth: 1,
 					internalRadius: 0.25,
-					startAngle: 3/4,
+					startAngle: 3/4,	//as a proportion of a circle, 3/4 makes 0 at the top
 					stroke: {
 						width: 0
 					},
 					fill: true,
 					accentLines:[
 					{
-						angle: seconds/86400,
+						angle: seconds/86400,	//between 0 & 1; the proportion of circle
 						color: '#f00',
 						width: 2,
 					},{
