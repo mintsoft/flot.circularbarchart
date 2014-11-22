@@ -244,38 +244,6 @@ Licensed under the Apache license.
 			}
 			
 			function drawPie() {
-				if(options.series.stack)
-					return drawStackedPie();
-
-				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
-				radius -= 2*options.series.circularbar.xAxisOverhang;
-				var ranges = determineRangesForSeries(series);
-			
-				// center and rotate to starting position
-				ctx.save();
-				ctx.translate(centerLeft,centerTop);
-				ctx.save();
-				
-				for(var s=0; s < series.length; ++s) {
-					var dataSet = series[s].data;
-					for (var i = 0; i < dataSet.length; ++i) {
-						var datapoint = dataSet[i];
-						var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
-						var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
-						var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
-						var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
-						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, options.series.circularbar.fill);
-						if(options.series.circularbar.stroke.width > 0)
-							drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
-					}
-				}
-				drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
-				drawInternalHole(ctx);
-				drawAccentLines(radius + options.series.circularbar.xAxisOverhang);
-				ctx.restore();
-				
-				return true;
-				
 				function drawAxis(radius, ranges, overhang) {
 					//vertical line
 					ctx.beginPath();
@@ -315,9 +283,7 @@ Licensed under the Apache license.
 					
 					ctx.restore();
 				}
-				
-				function drawXAxisLabelAtAngle(x_val, angle, radius, color)
-				{
+				function drawXAxisLabelAtAngle(x_val, angle, radius, color) {
 					var xpos = radius * Math.cos(angle),
 						ypos = radius * Math.sin(angle);
 					ctx.textAlign = 'center';
@@ -325,7 +291,6 @@ Licensed under the Apache license.
 					ctx.fillStyle = color;
 					ctx.fillText(x_val, xpos, ypos);
 				}
-				
 				function drawStackedPie() {
 					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
 					radius -= 2*options.series.circularbar.xAxisOverhang;
@@ -364,7 +329,6 @@ Licensed under the Apache license.
 
 					return true;
 				}
-
 				function drawBarSlice(startAngle, endAngle, sliceRadius, color, fill) {
 
 					if (startAngle < 0 || isNaN(startAngle)) {
@@ -394,7 +358,6 @@ Licensed under the Apache license.
 						ctx.stroke();
 					}
 				}
-				
 				function drawBarSegment(startAngle, endAngle, startRadius, endRadius, color, fill) {
 
 					if (startAngle < 0 || isNaN(startAngle)) {
@@ -428,27 +391,18 @@ Licensed under the Apache license.
 						ctx.stroke();
 					}
 				}
-
-				function findAngleForXValue(x, ranges)
-				{
-					/*
-					 so 0 = ranges.x.min
-					 and tau || 2pi = ranges.x.max
-					 */
+				function findAngleForXValue(x, ranges) {
+					// so 0 = ranges.x.min
+					// and tau || 2pi = ranges.x.max
 					var dx = x - ranges.x.min;
 					var xAngle = x / (ranges.x.max + options.series.circularbar.barWidth);
-
 					return xAngle * TAU;
 				}
-
-				function findRadiusForYValue(y, ranges, maxRadius)
-				{
+				function findRadiusForYValue(y, ranges, maxRadius) {
 					var ratio = y/ranges.y.max;
 					return internalHole() + (maxRadius-internalHole()) * ratio;
 				}
-				
-				function findBoundariesForYValueSegment(y, startRadius, ranges, maxRadius)
-				{
+				function findBoundariesForYValueSegment(y, startRadius, ranges, maxRadius) {
 					var y_ratio = y/ranges.y.max;
 					
 					var returns = {
@@ -469,12 +423,9 @@ Licensed under the Apache license.
 					
 					return returns;
 				}
-				
-				function internalHole()
-				{
+				function internalHole() {
 					return options.series.circularbar.internalRadius * maxRadius;
 				}
-				
 				function drawInternalHole(layer) {
 					layer.save();
 					var innerRadius = internalHole();
@@ -500,6 +451,35 @@ Licensed under the Apache license.
 					}
 				}
 				
+				if(options.series.stack)
+					return drawStackedPie();
+
+				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
+				radius -= 2*options.series.circularbar.xAxisOverhang;
+				var ranges = determineRangesForSeries(series);
+			
+				// center and rotate to starting position
+				ctx.save();
+				ctx.translate(centerLeft,centerTop);
+				ctx.save();
+				
+				for(var s=0; s < series.length; ++s) {
+					var dataSet = series[s].data;
+					for (var i = 0; i < dataSet.length; ++i) {
+						var datapoint = dataSet[i];
+						var endDataPoint = datapoint[0] + options.series.circularbar.barWidth;
+						var sliceStartAngle = baseAngle + findAngleForXValue(datapoint[0], ranges);
+						var sliceEndAngle = baseAngle + findAngleForXValue(endDataPoint, ranges);
+						var sliceRadius = findRadiusForYValue(datapoint[1], ranges, radius);
+						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, options.series.circularbar.fill);
+						if(options.series.circularbar.stroke.width > 0)
+							drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
+					}
+				}
+				drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
+				drawInternalHole(ctx);
+				drawAccentLines(radius + options.series.circularbar.xAxisOverhang);
+				ctx.restore();
 			} // end drawPie function
 		} // end draw function
     }
