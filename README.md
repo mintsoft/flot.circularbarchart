@@ -8,4 +8,8 @@ the ability to put labels on "x-axis" values and the magnitude ("y-axis" or radi
 
 Looks kinda like this:
 
-![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example1.png "Rough Example")
+![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example2.png "Rough Example")
+
+Minimal example:
+
+![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example1.png "Minimal Example")
