@@ -246,7 +246,7 @@ Licensed under the Apache license.
 					return drawStackedPie();
 
 				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
-				radius -= options.series.circularbar.xAxisOverhang;
+				radius -= 2*options.series.circularbar.xAxisOverhang;
 				var ranges = determineRangesForSeries(series);
 			
 				// center and rotate to starting position
@@ -302,21 +302,33 @@ Licensed under the Apache license.
 					}
 					
 					//segments
-					for (var x_val = ranges.x.min; x_val <= ranges.x.max; x_val += options.series.circularbar.barWidth)
+					for (var x_val = ranges.x.min, xAxisIndex = 0; x_val <= ranges.x.max; x_val += options.series.circularbar.barWidth, xAxisIndex++)
 					{
 						var sliceStartAngle = baseAngle + findAngleForXValue(x_val, ranges);
 						var sliceEndAngle = baseAngle + findAngleForXValue(x_val + options.series.circularbar.barWidth, ranges);
-						
-						//drawBarSlice(sliceStartAngle, sliceEndAngle, radius, options.grid.markingsColor, false);
-						drawLineAtAngle(sliceStartAngle, radius + options.series.circularbar.xAxisOverhang, options.grid.markingsColor, 1);
+
+						drawLineAtAngle(sliceStartAngle, radius + overhang, options.grid.markingsColor, 1);
+						if (xAxisIndex % options.xaxis.tickStep == 0) {
+							drawXAxisLabelAtAngle(x_val, sliceStartAngle, radius+1.5*overhang, options.yaxis.tickColor);
+						}
 					}
 					
 					ctx.restore();
 				}
 				
+				function drawXAxisLabelAtAngle(x_val, angle, radius, color)
+				{
+					var xpos = radius * Math.cos(angle),
+						ypos = radius * Math.sin(angle);
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.fillStyle = color;
+					ctx.fillText(x_val, xpos, ypos);
+				}
+				
 				function drawStackedPie() {
 					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
-					radius -= options.series.circularbar.xAxisOverhang;
+					radius -= 2*options.series.circularbar.xAxisOverhang;
 					var ranges = determineRangesForSeries(series);
 					
 					ctx.save();
@@ -518,11 +530,14 @@ Licensed under the Apache license.
 					width: 2,
 					angle: 0.25	//between 0 & 1; 1 and 0 being the same, 0.5 being half a rotation
 				},
-				xAxisOverhang: 20	//in px
+				xAxisOverhang: 10	//in px
 			}
 		},
 		yaxis: {
 			ticks: 5,
+		},
+		xaxis: {
+			tickStep: 2,
 		}
 	};
 
