@@ -234,11 +234,13 @@ Licensed under the Apache license.
 				ctx.save();
 			}
 			
-			function drawAccentLine(radius) {
-				var accentOpts = options.series.circularbar.accentLine;
-				if(!accentOpts.show)
-					return;
-				drawLineAtAngle(baseAngle + TAU * accentOpts.angle, radius, accentOpts.color, accentOpts.width);
+			function drawAccentLines(radius) {
+				for (var idx in options.series.circularbar.accentLines) {
+					var line = options.series.circularbar.accentLines[idx];
+					var colour = line.color || "#f00";
+					var width = line.width == undefined ? 1 : line.width;
+					drawLineAtAngle(baseAngle + TAU * line.angle, radius, colour, width);
+				}
 			}
 			
 			function drawPie() {
@@ -269,7 +271,7 @@ Licensed under the Apache license.
 				}
 				drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 				drawInternalHole(ctx);
-				drawAccentLine(radius);
+				drawAccentLines(radius + options.series.circularbar.xAxisOverhang);
 				ctx.restore();
 				
 				return true;
@@ -357,7 +359,7 @@ Licensed under the Apache license.
 					}
 					drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 					drawInternalHole(ctx);
-					drawAccentLine(radius + options.series.circularbar.xAxisOverhang);
+					drawAccentLines(radius + options.series.circularbar.xAxisOverhang);
 					ctx.restore();
 
 					return true;
@@ -520,12 +522,7 @@ Licensed under the Apache license.
 					width: 1
 				},
 				fill: true,	
-				accentLine: {
-					show: false,
-					color: '#f00',
-					width: 2,
-					angle: 0.25	//between 0 & 1; 1 and 0 being the same, 0.5 being half a rotation
-				},
+				accentLines: [],
 				xAxisOverhang: 10	//in px
 			}
 		},
