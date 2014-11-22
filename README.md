@@ -4,10 +4,15 @@ flot.circularbarchart
 A Circular BarChart plugin!
 
 Essentially this is a bar or column chart wrapped in a circle. 
+
 The "x-axis" properties are applied to the angle axis if applicable
+
 The "y-axis" properties are applied to the radius axis (distance from centre) if applicable
+
 Grid is toggleable, as is the label text etc
+
 Looks kinda like this:
+
 
 ![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example2.png "Rough Example")
 
