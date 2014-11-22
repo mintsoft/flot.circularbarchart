@@ -3,9 +3,10 @@ flot.circularbarchart
 
 A Circular BarChart plugin!
 
-Follows a similiar mechanism to normal barcharts however is currently missing
-the ability to put labels on "x-axis" values and the magnitude ("y-axis" or radius)
-
+Essentially this is a bar or column chart wrapped in a circle. 
+The "x-axis" properties are applied to the angle axis if applicable
+The "y-axis" properties are applied to the radius axis (distance from centre) if applicable
+Grid is toggleable, as is the label text etc
 Looks kinda like this:
 
 ![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example2.png "Rough Example")
