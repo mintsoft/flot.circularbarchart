@@ -34,7 +34,8 @@
 			d4.push([i, parseInt(Math.random() * 5)]);
 		}
 
-		//var data = [[0, 3],[1,5],[3,7],[4, 8],[5,1],[6,3],[7,0],[8, 5], [9, 13]];
+		var seconds = new Date().getTime() / 1000;
+		
 		$.plot("#circularholder", [d1,d2,d3,d4], {
 			series: {
 				stack: true,
@@ -49,7 +50,7 @@
 					fill: true,
 					accentLine:{
 						show: true,
-						angle: 10/1440,
+						angle: seconds/86400,
 					}
 				}
 			},

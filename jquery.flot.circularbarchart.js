@@ -15,7 +15,7 @@ Licensed under the Apache license.
 			ctx = null,
 			barWidth = null;
 		var TAU = 2 * Math.PI;
-		var baseAngle = null;
+		var baseAngle = 0;
 		/*
 		Flot hooks
 		*/
@@ -218,24 +218,27 @@ Licensed under the Apache license.
 				return ranges;
 			}
 			
+			function drawLineAtAngle(angle, radius, colour, lineWidth) {
+				ctx.save();
+				var xpos = radius * Math.cos(angle),
+					ypos = radius * Math.sin(angle);
+				
+				ctx.beginPath();
+				ctx.strokeStyle = colour;
+				ctx.lineWidth = lineWidth;
+				ctx.moveTo(0, 0);
+				ctx.lineTo(xpos, ypos);
+				ctx.stroke();
+				
+				ctx.restore();
+				ctx.save();
+			}
+			
 			function drawAccentLine(radius) {
 				var accentOpts = options.series.circularbar.accentLine;
-				if(accentOpts.show)
-				{
-					ctx.save();
-					var xpos = radius * Math.cos(baseAngle + TAU * accentOpts.angle),
-						ypos = radius * Math.sin(baseAngle + TAU * accentOpts.angle);
-					
-					ctx.beginPath();
-					ctx.strokeStyle = accentOpts.color;
-					ctx.lineWidth = accentOpts.width;
-					ctx.moveTo(0, 0);
-					ctx.lineTo(xpos, ypos);
-					ctx.stroke();
-					
-					ctx.restore();
-					ctx.save();
-				}
+				if(!accentOpts.show)
+					return;
+				drawLineAtAngle(baseAngle + TAU * accentOpts.angle, radius, accentOpts.color, accentOpts.width);
 			}
 			
 			function drawPie() {
@@ -243,7 +246,7 @@ Licensed under the Apache license.
 					return drawStackedPie();
 
 				var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
-
+				radius -= options.series.circularbar.xAxisOverhang;
 				var ranges = determineRangesForSeries(series);
 			
 				// center and rotate to starting position
@@ -251,7 +254,7 @@ Licensed under the Apache license.
 				ctx.translate(centerLeft,centerTop);
 				ctx.save();
 
-				drawAxis(radius, ranges);
+				drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 				
 				for(var s=0; s < series.length; ++s) {
 					var dataSet = series[s].data;
@@ -264,8 +267,6 @@ Licensed under the Apache license.
 						drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, series[s].color, options.series.circularbar.fill);
 						if(options.series.circularbar.stroke.width > 0)
 							drawBarSlice(sliceStartAngle, sliceEndAngle, sliceRadius, options.series.circularbar.stroke.color, false);
-
-						//console.debug("Input:" + datapoint + "\t Drawing : "+ sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius);
 					}
 				}
 
@@ -275,7 +276,7 @@ Licensed under the Apache license.
 				
 				return true;
 				
-				function drawAxis(radius, ranges) {
+				function drawAxis(radius, ranges, overhang) {
 					//vertical line
 					ctx.beginPath();
 					ctx.strokeStyle = options.grid.markingsColor;
@@ -306,7 +307,8 @@ Licensed under the Apache license.
 						var sliceStartAngle = baseAngle + findAngleForXValue(x_val, ranges);
 						var sliceEndAngle = baseAngle + findAngleForXValue(x_val + options.series.circularbar.barWidth, ranges);
 						
-						drawBarSlice(sliceStartAngle, sliceEndAngle, radius, options.grid.markingsColor, false);
+						//drawBarSlice(sliceStartAngle, sliceEndAngle, radius, options.grid.markingsColor, false);
+						drawLineAtAngle(sliceStartAngle, radius + options.series.circularbar.xAxisOverhang, options.grid.markingsColor, 1);
 					}
 					
 					ctx.restore();
@@ -314,14 +316,14 @@ Licensed under the Apache license.
 				
 				function drawStackedPie() {
 					var radius = options.series.circularbar.radius > 1 ? options.series.circularbar.radius : maxRadius * options.series.circularbar.radius;
-					
+					radius -= options.series.circularbar.xAxisOverhang;
 					var ranges = determineRangesForSeries(series);
-					//console.log("radius", radius, maxRadius, ranges.y.max);
+					
 					ctx.save();
 					ctx.translate(centerLeft,centerTop);
 					ctx.save();
 
-					drawAxis(radius, ranges);
+					drawAxis(radius, ranges, options.series.circularbar.xAxisOverhang);
 					
 					var maximumValuesPerX = [];
 
@@ -343,13 +345,11 @@ Licensed under the Apache license.
 								drawBarSegment(sliceStartAngle, sliceEndAngle, startRadius, endRadius, options.series.circularbar.stroke.color, false);
 
 							maximumValuesPerX[datapoint[0]] = endRadius;
-							
-							//console.debug("Set: ",s,"Input:",i,datapoint,"\t Drawing : ", sliceStartAngle/TAU, sliceEndAngle/TAU, sliceRadius, endRadius);
 						}
 					}
 
 					drawInternalHole(ctx);
-					drawAccentLine(radius);
+					drawAccentLine(radius + options.series.circularbar.xAxisOverhang);
 					ctx.restore();
 
 					return true;
@@ -517,7 +517,8 @@ Licensed under the Apache license.
 					color: '#f00',
 					width: 2,
 					angle: 0.25	//between 0 & 1; 1 and 0 being the same, 0.5 being half a rotation
-				}
+				},
+				xAxisOverhang: 20	//in px
 			}
 		},
 		yaxis: {
