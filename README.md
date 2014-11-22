@@ -10,10 +10,6 @@ Looks kinda like this:
 
 ![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example2.png "Rough Example")
 
-Minimal example:
-
-![Example Image](https://raw.githubusercontent.com/mintsoft/flot.circularbarchart/master/Example1.png "Minimal Example")
-
 Usage Example
 -------------
 
